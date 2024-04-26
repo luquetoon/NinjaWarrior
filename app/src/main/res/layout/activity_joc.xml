@@ -6,4 +6,21 @@
     android:layout_height="match_parent"
     tools:context=".JocActivity">
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" >
+        <com.example.ninjawarrior.VistaJoc
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/VistaJoc"
+            android:focusable="true"
+            android:background="@drawable/fondo" />
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
