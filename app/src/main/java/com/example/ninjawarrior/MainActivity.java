@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
         listenerPlay();
     }
 
-    //REVISAR QUE SE PUEDA METER EL MISMO USUARIO Y GUARDAR PUNTUACIONES
     private void listenerPlay() {
         bPlay.setOnClickListener((view) -> {
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -60,25 +59,36 @@ public class MainActivity extends AppCompatActivity {
             alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     String playerName = input.getText().toString();
-                    if (isPlayerNameAvailable(playerName)) {
-                        int bestScore = 0;
-                        String existingPlayer = sharedPreferences.getString(KEY_PLAYER_NAME, null);
-                        if (existingPlayer != null) {
-                            bestScore = sharedPreferences.getInt(existingPlayer + "_score", 0);
-                        }
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString(KEY_PLAYER_NAME, playerName);
-                        editor.putInt(playerName + "_score", bestScore);
-                        editor.apply();
+                    int bestScore = 0;
+                    String existingPlayer = sharedPreferences.getString(KEY_PLAYER_NAME, null);
+
+                    // Verificar si el nombre de usuario existe y actualizar el mejor puntaje si es necesario
+                    if (existingPlayer != null && !existingPlayer.equals(playerName)) {
+                        bestScore = sharedPreferences.getInt(existingPlayer + "_score", 0);
                     } else {
-                        // Si el nombre de jugador no está disponible, mostrar un mensaje de error
-                        showErrorMessage("El nombre de jugador ya está en uso. Por favor elija otro.");
+                        bestScore = sharedPreferences.getInt(playerName + "_score", 0);
                     }
+
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString(KEY_PLAYER_NAME, playerName);
+                    editor.putInt(playerName + "_score", bestScore);
+                    editor.apply();
+
+                    // Iniciar la nueva actividad
+                    Intent intent = new Intent(getApplicationContext(), JocActivity.class);
+                    intent.putExtra(KEY_PLAYER_NAME, playerName);
+                    startActivity(intent);
                 }
             });
+
+            alert.setNegativeButton("Cancelar", null);
             alert.show();
         });
     }
+
+
+
+
 
     private boolean isPlayerNameAvailable(String playerName) {
         Map<String, ?> allEntries = sharedPreferences.getAll();
@@ -189,7 +199,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_info) {
-            // Lógica para la opción "action_info"
+            // Mostrar la información del desarrollador y del juego
+            showInfoDialog();
             return true;
         } else if (id == R.id.action_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
@@ -198,6 +209,16 @@ public class MainActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void showInfoDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Información");
+        builder.setMessage("Desarrollado por Sergi\n\n" +
+                "Este es un juego de Ninja Warrior, donde deberás evitar a los enemigos y obtener la mayor puntuación posible.");
+        builder.setPositiveButton("Aceptar", null);
+        builder.show();
+    }
+
 
     private void animationImage() {
         ninja = findViewById(R.id.ivNinja);
