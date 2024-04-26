@@ -1,0 +1,41 @@
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="Categoría 1"
+    android:key="preferencias_principal">
+
+    <CheckBoxPreference
+        android:key="music"
+        android:title="@string/repMusic"
+        android:summary="@string/repMusicSumm"/>
+
+    <PreferenceCategory
+        android:title="Separator"
+        android:layout="@layout/preference_separator"/>
+
+    <EditTextPreference
+        android:key="setEnemines"
+        android:title="@string/numEnemies"
+        android:summary="@string/numEnemiesSumm"
+        android:dialogTitle="Introduce valor"
+        android:inputType="number"
+        android:defaultValue="5"
+        />
+
+    <PreferenceCategory
+        android:title="Separator"
+        android:layout="@layout/preference_separator"/>
+
+    <ListPreference
+        android:key="ninja"
+        android:title="@string/ninja"
+        android:summary="@string/ninjaSumm"
+        android:entries="@array/ninjas"
+        android:entryValues="@array/codigopais"
+        android:defaultValue="1"
+        />
+
+    <PreferenceCategory
+        android:title="Separator"
+        android:layout="@layout/preference_separator"/>
+
+</PreferenceScreen>

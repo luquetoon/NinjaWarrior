@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- list_item_layout.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <ImageView
+        android:id="@+id/ninja1"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ninja1" />
+
+    <TextView
+        android:id="@+id/ninja1Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ninja 1" />
+
+    <ImageView
+        android:id="@+id/ninja2"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ninja2" />
+
+    <TextView
+        android:id="@+id/ninja2Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ninja 2" />
+
+    <ImageView
+        android:id="@+id/ninja3"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ninja3" />
+
+    <TextView
+        android:id="@+id/ninja3Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ninja 3" />
+</LinearLayout>

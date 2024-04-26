@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Ninja Warrior</string>
+    <string name="play">Jugar</string>
+    <string name="score">Puntuaciones</string>
+    <string name="exit">Salir</string>
+    <string name="noScoresSaved">No hay puntuaciones guardadas</string>
+    <string name="repMusic">Reproducir Música</string>
+    <string name="repMusicSumm">Se reproducira música de fondo</string>
+    <string name="ninja">Ninja</string>
+    <string name="ninjaSumm">Escoger ninja</string>
+    <string name="numEnemies">Numero de enemigos</string>
+    <string name="numEnemiesSumm">Cantidad de enemigos</string>
+    <string name="indicarninja">Indicar ninja</string>
+</resources>
