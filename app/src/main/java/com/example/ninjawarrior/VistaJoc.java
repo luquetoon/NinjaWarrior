@@ -1,9 +1,14 @@
 package com.example.ninjawarrior;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
 import android.view.View;
+
+import androidx.preference.PreferenceManager;
+
 import java.util.Vector;
 
 public class VistaJoc extends View {
@@ -14,23 +19,22 @@ public class VistaJoc extends View {
     // Increment estàndard de gir i acceleració
     private static final int INC_GIR = 5;
     private static final float INC_ACCELERACIO = 0.5f;
-
-    private Drawable drawableNinja, drawableGanivet, drawableEnemic;
+    private SharedPreferences sharedPreferences;
+    private Drawable drawableNinja, drawableGanivet, drawEnemie;
     private Vector<Grafics> objectius;
 
-    public VistaJoc(Context context) {
-        super(context);
+    public VistaJoc(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        drawEnemie = context.getResources().getDrawable(R.drawable.enemie, null);
 
-        Drawable drawableNinja, drawableGanivet, drawableEnemic;
-        // Obtenim referència al recurs ninja_enemic guardat en carpeta Res
-        drawableEnemic = context.getResources().getDrawable(R.drawable.enemie, null);
+        //Obtenir el valor de la sharedpref 'setEnemies'
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        int numObjectius = sharedPreferences.getInt("setEnemines", 5);
 
-        // Creem els objectius o blancs i inicialitzem la seva velocitat, angle i
-        // rotació. La posició inicial no la podem obtenir
-        // fins a conèixer ample i alt pantalla
+        //Crear els objectius
         objectius = new Vector<Grafics>();
-        for (int i = 0; i < objectius.size() ; i++) {
-            Grafics objectiu = new Grafics(this, drawableEnemic);
+        for (int i = 0; i < numObjectius; i++) {
+            Grafics objectiu = new Grafics(this, drawEnemie);
             objectiu.setIncY(Math.random() * 4 - 2);
             objectiu.setIncX(Math.random() * 4 - 2);
             objectiu.setAngle((int) (Math.random() * 360));
@@ -38,6 +42,7 @@ public class VistaJoc extends View {
             objectius.add(objectiu);
         }
     }
+
     // Métode que ens dóna ample i alt pantalla
     @Override
     protected void onSizeChanged(int ancho, int alto, int anchoAnter, int altoAnter) {
