@@ -14,20 +14,27 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
     private ImageView ninja;
     private Button bExit, bPlay, bScore;
     private Boolean music;
-    int enemies;
     private MediaPlayer mp;
     private Toolbar myToolbar;
     private SharedPreferences sharedPreferences, pref;
@@ -35,20 +42,47 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREFERENCES_NAME = "PrefScores";
     private static final String KEY_PLAYER_NAME = "playerName";
     private static final String KEY_BEST_SCORE = "bestScore";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         setToolbar();
         animationImage();
-        inicializeAtt();
+        initializeAttributes();
         startMusic();
+        setListeners();
+        //Quitar al entregar
+        setRandomValuesSharedPref();
+    }
+
+
+    //Test orden de Scores
+    private void setRandomValuesSharedPref() {
+        Random random = new Random();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putInt("Marta", random.nextInt(100));
+        editor.putInt("Samu", random.nextInt(100));
+        editor.putInt("Adri", random.nextInt(100));
+        editor.putInt("Ariel", random.nextInt(100));
+        editor.putInt("Sasa", random.nextInt(100));
+        editor.apply(); // Aplica los cambios
+
+    }
+
+    private void setListeners() {
         listenerExit();
         listenerScore();
         listenerPlay();
     }
 
+    // Iniciar la nueva actividad
+                /*Intent intent = new Intent(getApplicationContext(), JocActivity.class);
+                intent.putExtra(KEY_PLAYER_NAME, playerName);
+                startActivity(intent);*/
     private void listenerPlay() {
         bPlay.setOnClickListener((view) -> {
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -59,25 +93,26 @@ public class MainActivity extends AppCompatActivity {
             alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     String playerName = input.getText().toString();
-                    int bestScore = 0;
-                    String existingPlayer = sharedPreferences.getString(KEY_PLAYER_NAME, null);
+                    int bestScore;
 
-                    // Verificar si el nombre de usuario existe y actualizar puntuacion si es necesario
-                    if (existingPlayer != null && !existingPlayer.equals(playerName)) {
-                        bestScore = sharedPreferences.getInt(existingPlayer + "_score", 0);
+                    if (sharedPreferences.contains(playerName)) {
+                        // Si el jugador ya existe, obtener su puntaje
+                        bestScore = sharedPreferences.getInt(playerName, 0);
                     } else {
-                        bestScore = sharedPreferences.getInt(playerName + "_score", 0);
+                        // Si el jugador no existe, establecer su puntaje como 0
+                        bestScore = 0;
+                        // Además, guardar el nuevo jugador en las preferencias
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putInt(playerName, bestScore);
+                        editor.apply();
                     }
 
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(KEY_PLAYER_NAME, playerName);
-                    editor.putInt(playerName + "_score", bestScore);
-                    editor.apply();
-
-                    // Iniciar la nueva actividad
-                    Intent intent = new Intent(getApplicationContext(), JocActivity.class);
-                    intent.putExtra(KEY_PLAYER_NAME, playerName);
-                    startActivity(intent);
+                    // Mostrar el puntaje actual del jugador
+                    AlertDialog.Builder scoreAlert = new AlertDialog.Builder(MainActivity.this);
+                    scoreAlert.setTitle("Puntuación de " + playerName);
+                    scoreAlert.setMessage("Tu puntuación actual es: " + bestScore);
+                    scoreAlert.setPositiveButton("Ok", null);
+                    scoreAlert.show();
                 }
             });
 
@@ -90,51 +125,77 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    private boolean isPlayerNameAvailable(String playerName) {
-        Map<String, ?> allEntries = sharedPreferences.getAll();
-        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-            if (entry.getKey().equals(KEY_PLAYER_NAME)) {
-                String existingPlayer = entry.getValue().toString();
-                if (existingPlayer.equals(playerName)) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private void showErrorMessage(String message) {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Error");
-        alert.setMessage(message);
-        alert.setPositiveButton("Ok", null);
-        alert.show();
-    }
-
-
 
     private void listenerScore() {
         bScore.setOnClickListener((view) -> {
             // Obtener todos los nombres de los jugadores y sus puntuaciones
             Map<String, ?> allEntries = sharedPreferences.getAll();
+            // Crear una lista para almacenar las puntuaciones de los jugadores
+            List<PlayerScore> playerScores = new ArrayList<>();
+
+            // Iterar sobre todas las entradas y agregarlas a la lista
+            int maxNameLength = iteratorScoresName(allEntries, playerScores);
+
+            // Ordenar la lista de puntuaciones de los jugadores de mayor a menor
+            Collections.sort(playerScores, Collections.reverseOrder());
+            // Mostrar solo las cinco puntuaciones más altas
             StringBuilder scores = new StringBuilder();
-            for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
-                if (entry.getKey().contains("_score")) {
-                    String playerName = entry.getKey().replace("_score", "");
-                    int bestScore = sharedPreferences.getInt(entry.getKey(), 0);
-                    scores.append(playerName).append(" - Best Score: ").append(bestScore).append("\n");
-                }
-            }
-            if (scores.length() == 0) {
-                scores.append(getString(R.string.score));
-            }
+
+
+            // Iterar sobre las puntuaciones de los jugadores
+            iteratorScorePlayers(playerScores, maxNameLength, scores);
 
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
             alert.setTitle(getString(R.string.score));
-            alert.setMessage(scores.toString());
+            alert.setMessage(scores.length() > 0 ? scores.toString() : getString(R.string.score));
             alert.setPositiveButton("Ok", null);
-            alert.show();
+            AlertDialog dialog = alert.create();
+
+            dialog.show();
+
         });
+    }
+
+    private static int iteratorScoresName(Map<String, ?> allEntries, List<PlayerScore> playerScores) {
+        int maxNameLength = 0;
+
+        for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+
+            if (!entry.getKey().equals(KEY_PLAYER_NAME) && !entry.getKey().equals(KEY_BEST_SCORE)) {
+                String playerName = entry.getKey();
+                int bestScore = Integer.parseInt(entry.getValue().toString());
+                playerScores.add(new PlayerScore(playerName, bestScore));
+                // longitud máxima del nombre de jugador
+                maxNameLength = Math.max(maxNameLength, playerName.length());
+            }
+        }
+        return maxNameLength;
+    }
+
+    private static void iteratorScorePlayers(List<PlayerScore> playerScores, int maxNameLength, StringBuilder scores) {
+        int count = 0;
+        for (PlayerScore playerScore : playerScores) {
+            String playerName = String.format("%-" + maxNameLength + "s", playerScore.getPlayerName());
+            String score = String.format("%3d", playerScore.getScore());
+            scores.append(playerName).append("............................").append(score).append("\n");
+
+            count++;
+            if (count == 5) {
+                break;
+            }
+        }
+    }
+
+
+    //Controlar SahredPref
+    private void savePlayerScore(String playerName, int score) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(playerName, score);
+        editor.apply();
+    }
+
+    private int getPlayerScore(String playerName) {
+        return sharedPreferences.getInt(playerName, 0);
     }
 
     private void listenerExit() {
@@ -143,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void inicializeAtt() {
+    private void initializeAttributes() {
         sharedPreferences = getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
         bExit = findViewById(R.id.bExit);
         bPlay = findViewById(R.id.bPlay);
@@ -155,23 +216,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         checkPreferences();
-
     }
 
-    private void checkPreferences(){
+    private void checkPreferences() {
         music = pref.getBoolean("music", true);
-
-        int enemies = pref.getInt("setEnemies", DEFAULT);
-
-        if (music){
+        if (music) {
             startMusic();
-        }else{
+        } else {
             stopMusic();
         }
-
     }
 
-    private void startMusic(){
+    private void startMusic() {
         stopMusic();
         mp = MediaPlayer.create(this, R.raw.intromusic);
         mp.start();
@@ -195,6 +251,7 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -213,12 +270,11 @@ public class MainActivity extends AppCompatActivity {
     private void showInfoDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Información");
-        builder.setMessage("Desarrollado por Sergi\n\n" +
-                "Este es un juego de Ninja Warrior, donde deberás evitar a los enemigos y obtener la mayor puntuación posible.");
+        builder.setMessage("Desarrollado por Sergi\n\n" + "Este es un juego de Ninja Warrior," +
+                " donde deberás evitar a los enemigos y obtener la mayor puntuación posible.");
         builder.setPositiveButton("Aceptar", null);
         builder.show();
     }
-
 
     private void animationImage() {
         ninja = findViewById(R.id.ivNinja);
