@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                     int bestScore = 0;
                     String existingPlayer = sharedPreferences.getString(KEY_PLAYER_NAME, null);
 
-                    // Verificar si el nombre de usuario existe y actualizar el mejor puntaje si es necesario
+                    // Verificar si el nombre de usuario existe y actualizar puntuacion si es necesario
                     if (existingPlayer != null && !existingPlayer.equals(playerName)) {
                         bestScore = sharedPreferences.getInt(existingPlayer + "_score", 0);
                     } else {
