@@ -1,6 +1,7 @@
 package com.example.ninjawarrior;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
@@ -27,9 +28,15 @@ public class VistaJoc extends View {
         super(context, attrs);
         drawEnemie = context.getResources().getDrawable(R.drawable.enemie, null);
 
+
+
         //Obtenir el valor de la sharedpref 'setEnemies'
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        int numObjectius = sharedPreferences.getInt("setEnemines", 5);
+        int numObjectius = 2;
+//        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+//        int numObjectius = sharedPreferences.getInt("setEnemines", 5);
+        drawableNinja = context.getResources().getDrawable(R.drawable.ninja1, null);
+        //Inicializar Ninja
+        ninja = new Grafics(this, drawableNinja);
 
         //Crear els objectius
         objectius = new Vector<Grafics>();
@@ -47,12 +54,13 @@ public class VistaJoc extends View {
     @Override
     protected void onSizeChanged(int ancho, int alto, int anchoAnter, int altoAnter) {
         super.onSizeChanged(ancho, alto, anchoAnter, altoAnter);
-        // Una vegada que coneixem el nostre ample i alt situem els objectius de
-        // forma aleatória
+        // Una vegada que coneixem el nostre ample i alt situem els objectius de forma aleatória
         for (Grafics objectiu : objectius) {
             objectiu.setPosX(Math.random() * (ancho - objectiu.getAmplada()));
             objectiu.setPosY(Math.random() * (alto - objectiu.getAltura()));
         }
+
+
     }
     // Métode que dibuixa la vista
     @Override
@@ -61,6 +69,7 @@ public class VistaJoc extends View {
         for (Grafics objetiu : objectius) {
             objetiu.dibuixaGrafic(canvas);
         }
+        //ninja.dibuixaGrafic(canvas);
     }
 
 }
