@@ -7,13 +7,14 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import java.util.Vector;
 
 public class VistaJoc extends View {
 
-    private Grafics ninja;// Gràfic del ninja
+    private Grafics ninja; // Gràfic del ninja
     private int girNinja; // Increment de direcció
     private float acceleracioNinja; // augment de velocitat
     // Increment estàndard de gir i acceleració
@@ -22,17 +23,31 @@ public class VistaJoc extends View {
     private SharedPreferences sharedPreferences;
     private Drawable drawableNinja, drawableGanivet, drawEnemie;
     private Vector<Grafics> objectius;
+    private int numObjectius;
+
+    private Drawable[] imgNinjas = new Drawable[3];
 
     public VistaJoc(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+
+
+        // Obtener las preferencias
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        // Seleccionar ninja
+        imgNinjas[0] =  getContext().getDrawable(R.drawable.ninja1);
+        imgNinjas[1] =  getContext().getDrawable(R.drawable.ninja2);
+        imgNinjas[2] =  getContext().getDrawable(R.drawable.ninja3);
+
+        numObjectius = Integer.parseInt(MainActivity.objectiusPref);
+
         drawEnemie = context.getResources().getDrawable(R.drawable.enemie, null);
 
-        //Obtenir el valor de la sharedpref 'setEnemies'
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        int numObjectius = sharedPreferences.getInt("setEnemines", 5);
+        ninja = new Grafics(this, imgNinjas[Integer.parseInt(MainActivity.ninjaPref)]);
 
-        //Crear els objectius
-        objectius = new Vector<Grafics>();
+        // Crear los objectivos
+        objectius = new Vector<>();
         for (int i = 0; i < numObjectius; i++) {
             Grafics objectiu = new Grafics(this, drawEnemie);
             objectiu.setIncY(Math.random() * 4 - 2);
@@ -43,25 +58,24 @@ public class VistaJoc extends View {
         }
     }
 
-    // Métode que ens dóna ample i alt pantalla
+    // Método que nos da ancho y alto pantalla
     @Override
     protected void onSizeChanged(int ancho, int alto, int anchoAnter, int altoAnter) {
         super.onSizeChanged(ancho, alto, anchoAnter, altoAnter);
-        // Una vegada que coneixem el nostre ample i alt situem els objectius de
-        // forma aleatória
+        // Una vez que conocemos nuestro ancho y alto situamos los objetivos de
+        // forma aleatoria
         for (Grafics objectiu : objectius) {
             objectiu.setPosX(Math.random() * (ancho - objectiu.getAmplada()));
             objectiu.setPosY(Math.random() * (alto - objectiu.getAltura()));
         }
     }
-    // Métode que dibuixa la vista
+
+    // Método que dibuja la vista
     @Override
     synchronized protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        for (Grafics objetiu : objectius) {
-            objetiu.dibuixaGrafic(canvas);
+        for (Grafics objectiu : objectius) {
+            objectiu.dibuixaGrafic(canvas);
         }
     }
-
 }
-

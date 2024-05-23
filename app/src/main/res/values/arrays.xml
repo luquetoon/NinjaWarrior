@@ -6,8 +6,8 @@
         <item>Ninja 3</item>
     </string-array>
     <string-array name="codigopais">
-        <item>ESP</item>
-        <item>FRA</item>
-        <item>ALE</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
     </string-array>
 </resources>

@@ -37,7 +37,10 @@ public class MainActivity extends AppCompatActivity {
     private Boolean music;
     private MediaPlayer mp;
     private Toolbar myToolbar;
-    private SharedPreferences sharedPreferences, pref;
+    private SharedPreferences sharedPreferences;
+    private static SharedPreferences pref;
+
+    public static String ninjaPref, objectiusPref;
     private final int DEFAULT = 5;
     private static final String PREFERENCES_NAME = "PrefScores";
     private static final String KEY_PLAYER_NAME = "playerName";
@@ -79,10 +82,6 @@ public class MainActivity extends AppCompatActivity {
         listenerPlay();
     }
 
-    // Iniciar la nueva actividad
-                /*Intent intent = new Intent(getApplicationContext(), JocActivity.class);
-                intent.putExtra(KEY_PLAYER_NAME, playerName);
-                startActivity(intent);*/
     private void listenerPlay() {
         bPlay.setOnClickListener((view) -> {
             AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -111,7 +110,14 @@ public class MainActivity extends AppCompatActivity {
                     AlertDialog.Builder scoreAlert = new AlertDialog.Builder(MainActivity.this);
                     scoreAlert.setTitle("Puntuación de " + playerName);
                     scoreAlert.setMessage("Tu puntuación actual es: " + bestScore);
-                    scoreAlert.setPositiveButton("Ok", null);
+                    scoreAlert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface scoreDialog, int which) {
+                            Intent intent = new Intent(getApplicationContext(), JocActivity.class);
+                            intent.putExtra(KEY_PLAYER_NAME, playerName);
+                            startActivity(intent);
+                        }
+                    });
                     scoreAlert.show();
                 }
             });
@@ -120,11 +126,6 @@ public class MainActivity extends AppCompatActivity {
             alert.show();
         });
     }
-
-
-
-
-
 
     private void listenerScore() {
         bScore.setOnClickListener((view) -> {
@@ -140,7 +141,6 @@ public class MainActivity extends AppCompatActivity {
             Collections.sort(playerScores, Collections.reverseOrder());
             // Mostrar solo las cinco puntuaciones más altas
             StringBuilder scores = new StringBuilder();
-
 
             // Iterar sobre las puntuaciones de los jugadores
             iteratorScorePlayers(playerScores, maxNameLength, scores);
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
         for (PlayerScore playerScore : playerScores) {
             String playerName = String.format("%-" + maxNameLength + "s", playerScore.getPlayerName());
             String score = String.format("%3d", playerScore.getScore());
-            scores.append(playerName).append("............................").append(score).append("\n");
+            scores.append(playerName).append("...........................").append(score).append("\n");
 
             count++;
             if (count == 5) {
@@ -210,6 +210,7 @@ public class MainActivity extends AppCompatActivity {
         bPlay = findViewById(R.id.bPlay);
         bScore = findViewById(R.id.bScore);
         pref = PreferenceManager.getDefaultSharedPreferences(this);
+        prefSettings();
     }
 
     @Override
@@ -227,6 +228,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public static void prefSettings(){
+        objectiusPref = pref.getString("setEnemines", "5");
+        ninjaPref = pref.getString("ninja","1");
+
+    }
     private void startMusic() {
         stopMusic();
         mp = MediaPlayer.create(this, R.raw.intromusic);
