@@ -152,6 +152,4 @@ public class Grafics {
         this.view = view;
     }
 
-
-
 }
