@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -32,8 +33,8 @@ public class JocActivity extends AppCompatActivity {
 
     public void setScoreEndGame(int score){
         bundel = this.getIntent().getExtras();
-        name = pref.getString("playerName", "");
-        bestScore = Integer.parseInt(pref.getString("bestScore",""));
+        name = bundel.getString("playerName", "");
+        bestScore = pref.getInt(name,0);
 
         if (score > bestScore) {
             SharedPreferences.Editor editor = pref.edit();
@@ -44,15 +45,21 @@ public class JocActivity extends AppCompatActivity {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setTitle("¡Fin del juego!");
-        alertDialogBuilder.setMessage("¡Enhorabuena, " + name + "!\n" +
+        alertDialogBuilder.setMessage("¡Enhorabuena " + name + "!\n" +
                 "Tu puntuación actual es: " + score + "\n" +
                 "Tu mejor puntuación es: " + bestScore);
-        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        alertDialogBuilder.setNegativeButton("Salir", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 finish();
             }
         });
+
+        alertDialogBuilder.setPositiveButton("Reintentar", ((dialog, which) -> {
+            Intent intent = getIntent();
+            finish();
+            startActivity(intent);
+        }));
 
         alertDialogBuilder.show();
     }
