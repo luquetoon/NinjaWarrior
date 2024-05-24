@@ -14,7 +14,6 @@ import android.os.Bundle;
 public class JocActivity extends AppCompatActivity {
 
     private SharedPreferences pref;
-    private int MaxScore;
     private Bundle bundel;
     private int bestScore;
     private String name;
@@ -54,13 +53,12 @@ public class JocActivity extends AppCompatActivity {
                 finish();
             }
         });
-
         alertDialogBuilder.setPositiveButton("Reintentar", ((dialog, which) -> {
             Intent intent = getIntent();
             finish();
             startActivity(intent);
         }));
-
+        alertDialogBuilder.setCancelable(false);
         alertDialogBuilder.show();
     }
 }
