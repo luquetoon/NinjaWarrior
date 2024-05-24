@@ -17,7 +17,6 @@ import java.util.Vector;
 public class VistaJoc extends View {
 
     private JocActivity pare;
-
     private static final double INC_VELOCITAT_GANIVET = 12;
     private int girNinja;
     private float acceleracioNinja;

@@ -31,7 +31,7 @@
         android:summary="@string/ninjaSumm"
         android:entries="@array/ninjas"
         android:entryValues="@array/codigopais"
-        android:defaultValue="0"
+        android:defaultValue="1"
         />
 
     <PreferenceCategory
