@@ -42,9 +42,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static String ninjaPref, objectiusPref;
     private final int DEFAULT = 5;
-    private static final String PREFERENCES_NAME = "PrefScores";
-    private static final String KEY_PLAYER_NAME = "playerName";
-    private static final String KEY_BEST_SCORE = "bestScore";
+    public static final String PREFERENCES_NAME = "PrefScores";
+    public static final String KEY_PLAYER_NAME = "playerName";
+    public static final String KEY_BEST_SCORE = "bestScore";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
                     scoreAlert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface scoreDialog, int which) {
+                            prefSettings();
                             Intent intent = new Intent(getApplicationContext(), JocActivity.class);
                             intent.putExtra(KEY_PLAYER_NAME, playerName);
                             startActivity(intent);
@@ -186,18 +187,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    //Controlar SahredPref
-    private void savePlayerScore(String playerName, int score) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt(playerName, score);
-        editor.apply();
-    }
-
-    private int getPlayerScore(String playerName) {
-        return sharedPreferences.getInt(playerName, 0);
-    }
-
     private void listenerExit() {
         bExit.setOnClickListener((view) -> {
             System.exit(0);
@@ -210,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
         bPlay = findViewById(R.id.bPlay);
         bScore = findViewById(R.id.bScore);
         pref = PreferenceManager.getDefaultSharedPreferences(this);
-        prefSettings();
+
     }
 
     @Override
